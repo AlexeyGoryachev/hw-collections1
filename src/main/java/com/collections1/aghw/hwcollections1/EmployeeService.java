@@ -16,6 +16,7 @@ public class EmployeeService {
         employees.add(new Employee("Marin", "Kitagawa"));
         employees.add(new Employee("Mahiru", "Shiina"));
     }
+//    для добавления нового сотрудника ввести http://localhost:8080/employees/add?firstName=имя&lastName=фамилия
     public boolean addEmployee(Employee employee) {
 //        добавляем сотрудника (добавил выброс исключений)
         if (employees.size() >= MAX_EMPLOYEES) {
@@ -27,6 +28,7 @@ public class EmployeeService {
         employees.add(employee);
         return true;
     }
+//    для удаления сотрудника ввести http://localhost:8080/employees/remove?firstName=имя&lastName=фамилия
     public boolean removeEmployee(Employee employee) {
 //        удаляем сотрудника (добавил выброс исключений)
         if (!employees.remove(employee)) {
@@ -34,10 +36,12 @@ public class EmployeeService {
         }
         return true;
     }
+//    для получения списка сотрудников ввести http://localhost:8080/employees
     public List<Employee> getAllEmployees() {
 //        смотрим список сотрудников
         return new ArrayList<>(employees);
     }
+//    для поиска сотрудника ввести http://localhost:8080/employees/search?firstName=имя&lastName=фамилия
     public Employee findEmployeeByFullName(String firstName, String lastName) {
 //        ищем сотрудника по имени и фамилии
         return employees.stream()

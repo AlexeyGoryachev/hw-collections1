@@ -1,9 +1,8 @@
 package com.collections1.aghw.hwcollections1;
 
-import com.collections1.aghw.hwcollections1.exception.EmployeeAlreadyAddedException;
 import com.collections1.aghw.hwcollections1.exception.EmployeeNotFoundException;
-import com.collections1.aghw.hwcollections1.exception.EmployeeStorageIsFullException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,36 +10,30 @@ import java.util.List;
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
+    private final EmployeeService employeeService;
     @Autowired
-    private EmployeeService employeeService;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
     @GetMapping
     public List<Employee> getAllEmployees() {
         return employeeService.getAllEmployees();
     }
-    @PostMapping
-    public String addEmployee(@RequestBody Employee employee) {
-        try {
-            employeeService.addEmployee(employee);
-            return "Employee added successfully";
-        } catch (EmployeeStorageIsFullException | EmployeeAlreadyAddedException e) {
-            return e.getMessage();
-        }
+    @GetMapping("/add")
+    public ResponseEntity<String> addEmployee(@RequestParam String firstName, @RequestParam String lastName) {
+        Employee employee = new Employee(firstName, lastName);
+        employeeService.addEmployee(employee);
+        return ResponseEntity.ok("Employee added succesfully");
     }
-    @DeleteMapping
-    public String removeEmployee(@RequestBody Employee employee) {
-        try {
-            employeeService.removeEmployee(employee);
-            return "Employee removed successfully.";
-        } catch (EmployeeNotFoundException e) {
-            return e.getMessage();
-        }
+    @GetMapping("/remove")
+    public ResponseEntity<String> removeEmployee(@RequestParam String firstName, @RequestParam String lastName) {
+        Employee employee = new Employee(firstName, lastName);
+        employeeService.removeEmployee(employee);
+        return ResponseEntity.ok("Employee removed successfully");
     }
     @GetMapping("/search")
-    public Employee findEmployeeByFullName(@RequestParam String firstName, @RequestParam String lastName) {
-        try {
-            return employeeService.findEmployeeByFullName(firstName, lastName);
-        } catch (EmployeeNotFoundException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public ResponseEntity<Employee> findEmployeeByFullName(@RequestParam String firstName, @RequestParam String lastName) {
+        Employee employee = employeeService.findEmployeeByFullName(firstName, lastName);
+        return ResponseEntity.ok(employee);
     }
 }
