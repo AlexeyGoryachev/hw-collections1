@@ -1,4 +1,7 @@
 package com.collections1.aghw.hwcollections1;
+import com.collections1.aghw.hwcollections1.exception.EmployeeAlreadyAddedException;
+import com.collections1.aghw.hwcollections1.exception.EmployeeNotFoundException;
+import com.collections1.aghw.hwcollections1.exception.EmployeeStorageIsFullException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,18 +17,22 @@ public class EmployeeService {
         employees.add(new Employee("Mahiru", "Shiina"));
     }
     public boolean addEmployee(Employee employee) {
-//        добавляем сотрудника
-        if (employees.size() < MAX_EMPLOYEES) {
-            employees.add(employee);
-            return true;
-        } else {
-            System.out.println("Can't add more employees, coz limit has been reached.");
-            return false;
+//        добавляем сотрудника (добавил выброс исключений)
+        if (employees.size() >= MAX_EMPLOYEES) {
+            throw new EmployeeStorageIsFullException("Can't add more employees, coz limit has been reached.");
         }
+        if (employees.contains(employee)) {
+            throw new EmployeeAlreadyAddedException("Employee already added.");
+        }
+        employees.add(employee);
+        return true;
     }
     public boolean removeEmployee(Employee employee) {
-//        удаляем сотрудника
-        return employees.remove(employee);
+//        удаляем сотрудника (добавил выброс исключений)
+        if (!employees.remove(employee)) {
+            throw new EmployeeNotFoundException("Employee not found.");
+        }
+        return true;
     }
     public List<Employee> getAllEmployees() {
 //        смотрим список сотрудников
@@ -33,12 +40,10 @@ public class EmployeeService {
     }
     public Employee findEmployeeByFullName(String firstName, String lastName) {
 //        ищем сотрудника по имени и фамилии
-        for (Employee employee : employees) {
-            if (employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
-                return employee;
-            }
-        }
-        return null;
+        return employees.stream()
+                .filter(e -> e.getFirstName().equals(firstName) && e.getLastName().equals(lastName))
+                .findFirst()
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found."));
     }
     public int getEmployeeCount() {
 //        смотрим количество сотрудников
