@@ -24,4 +24,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+//добавляем метод обработки нового исключения
+    @ExceptionHandler(EmployeeInvalidDataException.class)
+    public ResponseEntity<String> handleEmployeeInvalidDataException(RuntimeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
