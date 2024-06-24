@@ -3,6 +3,8 @@ import com.collections1.aghw.hwcollections1.exception.EmployeeAlreadyAddedExcept
 import com.collections1.aghw.hwcollections1.exception.EmployeeNotFoundException;
 import com.collections1.aghw.hwcollections1.exception.EmployeeStorageIsFullException;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +16,9 @@ public class EmployeeService {
 
     public static final int MAX_EMPLOYEES = 10;
     public EmployeeService() {
-        employees.put("Anna Yamada", new Employee("Anna", "Yamada"));
-        employees.put("Marin Kitagava", new Employee("Marin", "Kitagawa"));
-        employees.put("Mahiru Shiina", new Employee("Mahiru", "Shiina"));
+        employees.put("Anna Yamada", new Employee("Anna", "Yamada", 200000, 1));
+        employees.put("Marin Kitagava", new Employee("Marin", "Kitagawa", 300000, 2));
+        employees.put("Mahiru Shiina", new Employee("Mahiru", "Shiina", 600000, 3));
     }
     //        инициализируем сотрудников в мапе (ключом является "имя фамилия")
     private String getEmployeeKey(String firstName, String lastName) {
@@ -54,5 +56,28 @@ public class EmployeeService {
     public int getEmployeeCount() {
 //        смотрим количество сотрудников
         return employees.size();
+    }
+
+    public Employee findEmployeeWithMaxSalaryByDep(int department) {
+        return employees.values().stream()
+                .filter(e -> e.getDepartment() == department)
+                .max(Comparator.comparingInt(Employee::getSalary))
+                .orElseThrow(() -> new EmployeeNotFoundException("No employees found in department " + department));
+    }
+    public Employee findEmployeeWithMinSalaryByDep(int department) {
+        return employees.values().stream()
+                .filter(e -> e.getDepartment() == department)
+                .min(Comparator.comparingInt(Employee::getSalary))
+                .orElseThrow(() -> new EmployeeNotFoundException("No employees found in department " + department));
+    }
+    public List<Employee> findEmployeesByDep(int department) {
+        return employees.values().stream()
+                .filter(e -> e.getDepartment() == department)
+                .collect(Collectors.toList());
+    }
+
+    public Map<Integer, List<Employee>> findAllEmployeesByDep() {
+        return employees.values().stream()
+                .collect(Collectors.groupingBy(Employee::getDepartment));
     }
 }
