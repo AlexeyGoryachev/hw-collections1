@@ -1,5 +1,7 @@
 package com.collections1.aghw.hwcollections1;
 
+import com.collections1.aghw.hwcollections1.exception.EmployeeInvalidDataException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,15 @@ public class EmployeeController {
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
+//добавляем метод валидации данных.
+    private void validateEmployeeData(String firstName, String lastName) {
+        if (StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) {
+            throw new EmployeeInvalidDataException("First name & Last name can't be blank/empty.");
+        }
+        if (StringUtils.isAlpha(firstName) || StringUtils.isAlpha(lastName)) {
+            throw new EmployeeInvalidDataException("First name & LAst name must contain only alphabetic symbols.");
+        }
+    }
 
     @GetMapping
     public List<Employee> getAllEmployees() {
@@ -27,6 +38,9 @@ public class EmployeeController {
                                               @RequestParam String lastName,
                                               @RequestParam int salary,
                                               @RequestParam int department) {
+//        вызываем метод валидации
+        validateEmployeeData(firstName, lastName);
+//        -^^^^^-
         Employee employee = new Employee(firstName, lastName, salary, department);
         employeeService.addEmployee(employee);
         return ResponseEntity.ok("Employee added succesfully");
@@ -35,6 +49,8 @@ public class EmployeeController {
     @GetMapping("/remove")
     public ResponseEntity<String> removeEmployee(@RequestParam String firstName,
                                                  @RequestParam String lastName) {
+
+        validateEmployeeData(firstName, lastName);
 //        при удалении сотрудников, их зарплату и номер отдела можно не учитывать, поэтому ставим "0".
         Employee employee = new Employee(firstName, lastName, 0, 0);
         employeeService.removeEmployee(employee);
@@ -43,6 +59,7 @@ public class EmployeeController {
 
     @GetMapping("/search")
     public ResponseEntity<Employee> findEmployeeByFullName(@RequestParam String firstName, @RequestParam String lastName) {
+        validateEmployeeData(firstName, lastName);
         Employee employee = employeeService.findEmployeeByFullName(firstName, lastName);
         return ResponseEntity.ok(employee);
     }
