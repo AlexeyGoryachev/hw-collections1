@@ -1,5 +1,6 @@
 package com.collections1.aghw.hwcollections1;
 
+import com.collections1.aghw.hwcollections1.exception.DepartmentNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +16,13 @@ public class DepartmentService {
     }
 
     public List<Employee> findEmployeesByDepartment(int departmentId) {
-        return employeeService.findEmployeesByDep(departmentId);
+        try {
+            return employeeService.findEmployeesByDep(departmentId);
+        } catch (DepartmentNotFoundException e) {
+            throw new DepartmentNotFoundException("Department " + departmentId + " not found.");
+        }
     }
+
     public int getDepartmentSalarySum(int departmentId) {
         return findEmployeesByDepartment(departmentId).stream()
                 .mapToInt(Employee::getSalary)
@@ -24,14 +30,21 @@ public class DepartmentService {
     }
 
     public Employee findEmployeeWithMaxSalaryByDepartment(int departmentId) {
-        return employeeService.findEmployeeWithMaxSalaryByDep(departmentId);
+        try {
+            return employeeService.findEmployeeWithMaxSalaryByDep(departmentId);
+        } catch (DepartmentNotFoundException e) {
+            throw new DepartmentNotFoundException("Department " + departmentId + " not found.");
+        }
     }
-
     public Employee findEmployeeWithMinSalaryByDepartment(int departmentId) {
-        return employeeService.findEmployeeWithMinSalaryByDep(departmentId);
+        try {
+            return employeeService.findEmployeeWithMinSalaryByDep(departmentId);
+        } catch (DepartmentNotFoundException e) {
+            throw new DepartmentNotFoundException("Department " + departmentId + " not found.");
+        }
     }
 
-    public Map<Integer, List<Employee>> findAllEmployeesGroupedByDepartment() {
+    public Map<Integer, List<Employee>> findAllEmployeesByDepartment() {
         return employeeService.findAllEmployeesByDep();
     }
 }
