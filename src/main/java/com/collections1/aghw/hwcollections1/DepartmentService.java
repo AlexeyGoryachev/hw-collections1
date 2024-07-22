@@ -44,7 +44,7 @@ public class DepartmentService {
         }
     }
 
-    public Map<Integer, List<Employee>> findAllEmployeesByDepartment() {
+    public Map<Integer, List<Employee>> findAllEmployeesGroupedByDepartment() {
         return employeeService.findAllEmployeesByDep();
     }
 }
