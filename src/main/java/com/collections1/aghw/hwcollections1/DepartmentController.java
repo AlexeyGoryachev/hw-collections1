@@ -22,7 +22,7 @@ public class DepartmentController {
 
     @GetMapping("/{id}/employees")
     public ResponseEntity<List<Employee>> getEmployeesByDepartment(@PathVariable int id) {
-        List<Employee> employees = departmentService.findEmployeesByDepartment(id);
+        List<Employee> employees = departmentService.getEmployeesByDepartment(id);
         return ResponseEntity.ok(employees);
     }
 
@@ -34,18 +34,18 @@ public class DepartmentController {
 
     @GetMapping("/{id}/salary/max")
     public ResponseEntity<Employee> getDepartmentMaxSalary(@PathVariable int id) {
-        Employee employee = departmentService.findEmployeeWithMaxSalaryByDepartment(id);
+        Employee employee = departmentService.getMaxSalaryEmployee(id);
         return ResponseEntity.ok(employee);
     }
     @GetMapping("/{id}/salary/min")
     public ResponseEntity<Employee> getDepartmentMinSalary(@PathVariable int id) {
-        Employee employee = departmentService.findEmployeeWithMinSalaryByDepartment(id);
+        Employee employee = departmentService.getMinSalaryEmployee(id);
         return ResponseEntity.ok(employee);
     }
 
     @GetMapping("/employees")
     public ResponseEntity<Map<Integer, List<Employee>>> getAllEmployeesGroupedByDepartment() {
-        Map<Integer, List<Employee>> employeesGroupedByDepartment = departmentService.findAllEmployeesGroupedByDepartment();
+        Map<Integer, List<Employee>> employeesGroupedByDepartment = departmentService.getAllEmployeesGroupedByDepartment();
         return ResponseEntity.ok(employeesGroupedByDepartment);
     }
 }

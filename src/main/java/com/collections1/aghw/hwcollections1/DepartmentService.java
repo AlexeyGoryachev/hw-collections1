@@ -1,6 +1,7 @@
 package com.collections1.aghw.hwcollections1;
 
 import com.collections1.aghw.hwcollections1.exception.DepartmentNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,41 +11,40 @@ import java.util.stream.Collectors;
 @Service
 public class DepartmentService {
     private final EmployeeService employeeService;
-
+@Autowired
     public DepartmentService(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
-    public List<Employee> findEmployeesByDepartment(int departmentId) {
-        try {
-            return employeeService.findEmployeesByDep(departmentId);
-        } catch (DepartmentNotFoundException e) {
-            throw new DepartmentNotFoundException("Department " + departmentId + " not found.");
+    public List<Employee> getEmployeesByDepartment(int departmentId) {
+        List<Employee> employees = employeeService.getAllEmployees().stream()
+                .filter(employee -> employee.getDepartment() == departmentId)
+                .collect(Collectors.toList());
+        if (employees.isEmpty()) {
+            throw new DepartmentNotFoundException("No employees foun in department " + departmentId);
         }
+        return employees;
     }
 
     public int getDepartmentSalarySum(int departmentId) {
-        return findEmployeesByDepartment(departmentId).stream()
+        return getEmployeesByDepartment(departmentId).stream()
                 .mapToInt(Employee::getSalary)
                 .sum();
     }
 
-    public Employee findEmployeeWithMaxSalaryByDepartment(int departmentId) {
-        try {
-            return employeeService.findEmployeeWithMaxSalaryByDep(departmentId);
-        } catch (DepartmentNotFoundException e) {
-            throw new DepartmentNotFoundException("Department " + departmentId + " not found.");
-        }
+    public Employee getMaxSalaryEmployee(int departmentId) {
+        return getEmployeesByDepartment(departmentId).stream()
+                .max((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()))
+                .orElseThrow(() -> new DepartmentNotFoundException("No employees found in department " + departmentId));
     }
-    public Employee findEmployeeWithMinSalaryByDepartment(int departmentId) {
-        try {
-            return employeeService.findEmployeeWithMinSalaryByDep(departmentId);
-        } catch (DepartmentNotFoundException e) {
-            throw new DepartmentNotFoundException("Department " + departmentId + " not found.");
-        }
+    public Employee getMinSalaryEmployee(int departmentId) {
+        return getEmployeesByDepartment(departmentId).stream()
+                .min((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()))
+                .orElseThrow(() -> new DepartmentNotFoundException("No employees found in department " + departmentId));
     }
 
-    public Map<Integer, List<Employee>> findAllEmployeesGroupedByDepartment() {
-        return employeeService.findAllEmployeesByDep();
+    public Map<Integer, List<Employee>> getAllEmployeesGroupedByDepartment() {
+        return employeeService.getAllEmployees().stream()
+                .collect(Collectors.groupingBy(Employee::getDepartment));
     }
 }
