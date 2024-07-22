@@ -29,4 +29,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleEmployeeInvalidDataException(RuntimeException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    @ExceptionHandler(DepartmentNotFoundException.class)
+    public ResponseEntity<String> handleDepartmentNotFoundException(DepartmentNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

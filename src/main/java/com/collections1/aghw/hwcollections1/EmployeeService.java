@@ -1,4 +1,5 @@
 package com.collections1.aghw.hwcollections1;
+import com.collections1.aghw.hwcollections1.exception.DepartmentNotFoundException;
 import com.collections1.aghw.hwcollections1.exception.EmployeeAlreadyAddedException;
 import com.collections1.aghw.hwcollections1.exception.EmployeeNotFoundException;
 import com.collections1.aghw.hwcollections1.exception.EmployeeStorageIsFullException;
@@ -59,21 +60,35 @@ public class EmployeeService {
     }
 
     public Employee findEmployeeWithMaxSalaryByDep(int department) {
-        return employees.values().stream()
+        List<Employee> departmentEmployees = employees.values().stream()
                 .filter(e -> e.getDepartment() == department)
+                .collect(Collectors.toList());
+        if (departmentEmployees.isEmpty()) {
+            throw new DepartmentNotFoundException("No employees found in department" + department);
+        }
+        return employees.values().stream()
                 .max(Comparator.comparingInt(Employee::getSalary))
                 .orElseThrow(() -> new EmployeeNotFoundException("No employees found in department " + department));
     }
     public Employee findEmployeeWithMinSalaryByDep(int department) {
-        return employees.values().stream()
+        List<Employee> departmentEmployees = employees.values().stream()
                 .filter(e -> e.getDepartment() == department)
+                .collect(Collectors.toList());
+        if (departmentEmployees.isEmpty()) {
+            throw new DepartmentNotFoundException("No employees found in department" + department);
+        }
+        return employees.values().stream()
                 .min(Comparator.comparingInt(Employee::getSalary))
                 .orElseThrow(() -> new EmployeeNotFoundException("No employees found in department " + department));
     }
     public List<Employee> findEmployeesByDep(int department) {
-        return employees.values().stream()
+        List<Employee> departmentEmployees = employees.values().stream()
                 .filter(e -> e.getDepartment() == department)
                 .collect(Collectors.toList());
+        if (departmentEmployees.isEmpty()) {
+            throw new DepartmentNotFoundException("No employees found in department" + department);
+        }
+        return departmentEmployees;
     }
 
     public Map<Integer, List<Employee>> findAllEmployeesByDep() {
